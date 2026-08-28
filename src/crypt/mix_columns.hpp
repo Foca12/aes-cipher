@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../helpers/constants.hpp"
-#include "../helpers/types.hpp"
-#include "../message.hpp"
+#include "../helpers.hpp"
 
 namespace crypt_operations
 { 
