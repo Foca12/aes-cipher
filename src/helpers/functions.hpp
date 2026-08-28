@@ -34,28 +34,28 @@ namespace aes_functions
     return result;
   }
   
-  int xtime(int x){
+  uint8_t xtime(uint8_t x){
     bool is_one = x & 0x80;
     x = x << 1 & 0xFF;
     return is_one? x ^ 0x1b : x ;
   }
 
-  int mul_01(int x) {return x;}
-  int mul_02(int x) {return xtime(x);}
-  int mul_03(int x) {return mul_02(x) ^ (x);}
-  int mul_04(int x) {return mul_02(mul_02(x));}
-  int mul_08(int x) {return mul_02(mul_04(x));}
-  int mul_09(int x) {return mul_08(x) ^ x;}
-  int mul_0B(int x) {return mul_08(x) ^ mul_02(x) ^ x;}
-  int mul_0D(int x) {return mul_08(x) ^ mul_04(x) ^ x;}
-  int mul_0E(int x) {return mul_08(x) ^ mul_04(x) ^ mul_02(x);}
+  uint8_t mul_01(uint8_t x) {return x;}
+  uint8_t mul_02(uint8_t x) {return xtime(x);}
+  uint8_t mul_03(uint8_t x) {return mul_02(x) ^ (x);}
+  uint8_t mul_04(uint8_t x) {return mul_02(mul_02(x));}
+  uint8_t mul_08(uint8_t x) {return mul_02(mul_04(x));}
+  uint8_t mul_09(uint8_t x) {return mul_08(x) ^ x;}
+  uint8_t mul_0B(uint8_t x) {return mul_08(x) ^ mul_02(x) ^ x;}
+  uint8_t mul_0D(uint8_t x) {return mul_08(x) ^ mul_04(x) ^ x;}
+  uint8_t mul_0E(uint8_t x) {return mul_08(x) ^ mul_04(x) ^ mul_02(x);}
 
-  const std::function<int(int)> mul_matrix[aes_constants::state_rows][aes_constants::state_columns] = \
+  const std::function<uint8_t(uint8_t)> mul_matrix[aes_constants::state_rows][aes_constants::state_rows] = \
           {{mul_02, mul_03, mul_01, mul_01},\
            {mul_01, mul_02, mul_03, mul_01},\
            {mul_01, mul_01, mul_02, mul_03},\
            {mul_03, mul_01, mul_01, mul_02}};
-  const std::function<int(int)> inv_mul_matrix[aes_constants::state_rows][aes_constants::state_columns] = \
+  const std::function<uint8_t(uint8_t)> inv_mul_matrix[aes_constants::state_rows][aes_constants::state_rows] = \
             {{mul_0E, mul_0B, mul_0D, mul_09},\
              {mul_09, mul_0E, mul_0B, mul_0D},\
              {mul_0D, mul_09, mul_0E, mul_0B},\
