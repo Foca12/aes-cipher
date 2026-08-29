@@ -100,6 +100,10 @@ namespace aes_types
   // message types
   using message_vct = std::vector<State>;
   using message_iterator = std::vector<State>::iterator;
+
+
+  // class types
+  using word_list = std::vector<aes_types::state_column>;
 } // namespace aes_types
 
 
