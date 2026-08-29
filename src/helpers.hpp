@@ -18,22 +18,19 @@ namespace aes_constants
   constexpr size_t state_columns = 4;
   constexpr size_t state_chars = 16;
 
-  constexpr size_t key128_rows = 4;
-  constexpr size_t key128_columns = 4;
+  constexpr size_t key128_start_words = 4;
   constexpr size_t key128_chars = 16;
-  constexpr size_t key128_expanded_words = 44;
+  constexpr size_t key128_total_words = 44;
   constexpr size_t key128_rounds = 10;
 
-  constexpr size_t key192_rows = 4;
-  constexpr size_t key192_columns = 6;
+  constexpr size_t key192_start_words = 6;
   constexpr size_t key192_chars = 24;
-  constexpr size_t key192_expanded_words = 52;
+  constexpr size_t key192_total_words = 52;
   constexpr size_t key192_rounds = 12;
 
-  constexpr size_t key256_rows = 4;
-  constexpr size_t key256_columns = 8;
+  constexpr size_t key256_start_words = 8;
   constexpr size_t key256_chars = 32;
-  constexpr size_t key256_expanded_words = 60;
+  constexpr size_t key256_total_words = 60;
   constexpr size_t key256_rounds = 14;
 
   const int sbox[256] = {

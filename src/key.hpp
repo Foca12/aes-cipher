@@ -82,9 +82,26 @@ class Key {
   
   // contains aes128, aes192 and aes256
   static constexpr std::array<key_spec, 3> global_key_specs = {
-    Key::key_spec{16, 4, 44, 10, &Key::calc_key128_word},
-    Key::key_spec{24, 6, 52, 12, &Key::calc_key192_word},
-    Key::key_spec{32, 8, 60, 14, &Key::calc_key256_word},
+    Key::key_spec{
+      aes_constants::key128_chars,
+      aes_constants::key128_start_words,
+      aes_constants::key128_total_words,
+      aes_constants::key128_rounds,
+      &Key::calc_key128_word},
+
+    Key::key_spec{
+      aes_constants::key192_chars,
+      aes_constants::key192_start_words,
+      aes_constants::key192_total_words,
+      aes_constants::key192_rounds,
+      &Key::calc_key192_word},
+
+    Key::key_spec{
+      aes_constants::key256_chars,
+      aes_constants::key256_start_words,
+      aes_constants::key256_total_words,
+      aes_constants::key256_rounds,
+      &Key::calc_key256_word},
   };
   
   aes_types::word_list words = {};
@@ -92,8 +109,14 @@ class Key {
   bool expanded = false;
 
   public:
+  ~Key() {
+    for (auto& word : this->words) {
+      volatile uint8_t* ptr = reinterpret_cast<volatile uint8_t*>(word.data());
+      std::fill(ptr, ptr + aes_constants::state_rows, 0);
+    }
+  }
   Key (const aes_types::ilist& bytes){
-    for (auto key_spec : Key::global_key_specs){
+    for (auto& key_spec : Key::global_key_specs){
       // if input length matches with a key length
       if (bytes.size() == key_spec.chars){
         this->key_specs = key_spec;
@@ -145,7 +168,7 @@ class Key {
   std::string hex(bool all_keys=0) const {
     if (all_keys){
       aes_types::ilist vct;
-      for (aes_types::state_column word : this->words){
+      for (const aes_types::state_column& word : this->words){
         vct.insert(vct.end(), word.begin(), word.end());
       }
       return aes_functions::basic_hex(vct);
@@ -153,8 +176,7 @@ class Key {
     else{
       aes_types::ilist vct;
       for (size_t word_idx = 0; word_idx < this->key_specs.start_words; word_idx++){
-        aes_types::state_column word = this->words[word_idx];
-        vct.insert(vct.end(), word.begin(), word.end());
+        vct.insert(vct.end(), this->words[word_idx].begin(), this->words[word_idx].end());
       }
       return aes_functions::basic_hex(vct);
     }
@@ -162,7 +184,7 @@ class Key {
   std::string oct(bool all_keys=0) const {
     if (all_keys){
       aes_types::ilist vct;
-      for (aes_types::state_column word : this->words){
+      for (const aes_types::state_column& word : this->words){
         vct.insert(vct.end(), word.begin(), word.end());
       }
       return aes_functions::basic_oct(vct);
@@ -170,8 +192,7 @@ class Key {
     else{
       aes_types::ilist vct;
       for (size_t word_idx = 0; word_idx < this->key_specs.start_words; word_idx++){
-        aes_types::state_column word = this->words[word_idx];
-        vct.insert(vct.end(), word.begin(), word.end());
+        vct.insert(vct.end(), this->words[word_idx].begin(), this->words[word_idx].end());
       }
       return aes_functions::basic_oct(vct);
     }
