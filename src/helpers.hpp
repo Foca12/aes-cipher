@@ -243,7 +243,7 @@ namespace aes_functions
   std::string basic_hex(const aes_types::ilist& bytes){  
     std::stringstream ss;
     
-    for (const uint8_t& i : bytes) {
+    for (const int& i : bytes) {
       ss << std::hex << std::setw(2) << std::setfill('0') << i;
     }
 
@@ -252,7 +252,7 @@ namespace aes_functions
   std::string basic_oct(const aes_types::ilist& bytes){  
     std::stringstream ss;
     
-    for (const uint8_t& i : bytes) {
+    for (const int& i : bytes) {
       ss << std::oct << std::setw(3) << std::setfill('0') << i;
     }
 
