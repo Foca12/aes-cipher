@@ -5,6 +5,7 @@
 #include <iostream>
 
 class Key {
+  private:
   static aes_types::state_column g(aes_types::state_column x, size_t round) {
     x = aes_functions::shift_row_left(x, 1);
     x = crypt_operations::sub_bytes(x);
@@ -126,6 +127,10 @@ class Key {
 
   const aes_types::word_list& get_words() const {
     return this->words;
+  }
+
+  const Key::key_spec& get_specs() const {
+    return this->key_specs;
   }
 
   static Key from_hex(const std::string& str){
