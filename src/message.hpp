@@ -1,7 +1,6 @@
 #pragma once
 
-#include "helpers/constants.hpp"
-#include "helpers/types.hpp"
+#include "helpers.hpp"
 #include "state.hpp"
 
 class Message {

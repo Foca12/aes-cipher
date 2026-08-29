@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../message.hpp"
-#include "../helpers/constants.hpp"
+#include "../helpers.hpp"
 
 namespace crypt_operations
 {
@@ -19,7 +19,7 @@ namespace crypt_operations
   }
   template <size_t len>
   aes_types::iarr<len> sub_bytes(aes_types::iarr<len> input){
-    for (int i = 0; i < input.length(); i++){
+    for (int i = 0; i < len; i++){
       input[i] = aes_constants::sbox[input[i]];
     }
     return input;
@@ -39,7 +39,7 @@ namespace crypt_operations
   }
   template <size_t len>
   aes_types::iarr<len> inv_sub_bytes(aes_types::iarr<len> input){
-    for (int i = 0; i < input.length(); i++){
+    for (int i = 0; i < len; i++){
       input[i] = aes_constants::inv_sbox[input[i]];
     }
     return input;

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../helpers/constants.hpp"
-#include "../helpers/functions.hpp"
-#include "../helpers/types.hpp"
+#include "../helpers.hpp"
 #include "../message.hpp"
 #include "../state.hpp"
 
