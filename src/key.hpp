@@ -128,9 +128,11 @@ class Key {
   const aes_types::word_list& get_words() const {
     return this->words;
   }
-
   const Key::key_spec& get_specs() const {
     return this->key_specs;
+  }
+  bool is_expanded() const {
+    return this->expanded;
   }
 
   static Key from_hex(const std::string& str){
