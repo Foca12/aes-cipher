@@ -198,7 +198,6 @@ namespace aes_functions
       throw std::invalid_argument("Invalid hex number");
     }
 
-    std::cout << str.length() << '\n';
     aes_types::ilist vct;
     for (size_t i = 0; i < str.length(); i += aes_constants::chars_per_hex){
       std::string tmp = str.substr(i, aes_constants::chars_per_hex);
@@ -211,7 +210,6 @@ namespace aes_functions
       throw std::invalid_argument("Invalid oct number");
     }
 
-    std::cout << str.length() << '\n';
     aes_types::ilist vct;
     for (size_t i = 0; i < str.length(); i += aes_constants::chars_per_oct){
       std::string tmp = str.substr(i, aes_constants::chars_per_oct);

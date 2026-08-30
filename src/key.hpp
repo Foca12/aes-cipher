@@ -2,7 +2,6 @@
 
 #include "helpers.hpp"
 #include "crypt/sub_bytes.hpp"
-#include <iostream>
 
 class Key {
   private:

@@ -7,8 +7,6 @@
 #include "message.hpp"
 #include "key.hpp"
 
-#include <iostream>
-
 State encrypt_aes(State state, const Key& key){
   if (! key.is_expanded()){
     throw std::runtime_error("Trying to crypt a message with an unexpanded key, expand it by call key.expand()");
