@@ -8,13 +8,13 @@ An educational header-only library written in C++ that implements the **AES (Adv
 
 ## Description
 
-This is an implementation of the AES algorithm, written for educational purposes. This implementation provides AES-128, AES-192 and AES-256 support only in ECB mode.
+This is an implementation of the AES algorithm, written for educational purposes. This implementation provides AES-128, AES-192 and AES-256 support in ECB and CBC modes.
 
 ### Features
 
-- **AES-128**: ECB support for 128-bit encryption
-- **AES-192**: ECB support for 192-bit encryption
-- **AES-256**: ECB support for 256-bit encryption
+- **AES-128**: ECB and CBC support for 128-bit encryption
+- **AES-192**: ECB and CBC support for 192-bit encryption
+- **AES-256**: ECB and CBC support for 256-bit encryption
 - **Cryptographic Operations**:
   - SubBytes (byte substitution)
   - ShiftRows (row rotation)
@@ -22,17 +22,18 @@ This is an implementation of the AES algorithm, written for educational purposes
   - AddRoundKey (XOR with the round key)
 - **Key Expansion**: Automatic generation of round keys (11 round keys for AES-128, 13 for AES-192, 15 for AES-256)
 - **Encryption and Decryption**: Full support for both operations
+- **Header-only public API**: Full internal state management exposure, no need for separate compilation
 
 > Note: This project is educational. Do not use this code in production. See SECURITY.md for details.
 
 ## Usage
 
-This library is header-only — include include/aes_cipher.hpp to use the library (no separate compilation required).
+This library is header-only — include headers in include/ to use the library (no separate compilation required).
 
 ### Compilation
 
 ```bash
-g++ -std=c++17 -o aes_crypt examples/example1.cpp
+g++ -std=c++17 -o aes_crypt examples/cbc/example1.cpp
 ```
 
 ### Examples
@@ -43,12 +44,12 @@ See `examples/` for examples.
 
 ```
 aes_cipher/
-├── src/                     # Main implementation of AES and core functions
+├── src/                     # Implementation of AES and core functions
 │   ├── encrypt.hpp          # Main encryption functions
 │   ├── helpers.hpp          # Helper functions, type definitions and constants
-│   ├── message.hpp          # Message splitted into 16 byte-blocks
+│   ├── message.hpp          # Message splitted into 16 byte blocks
 │   ├── key.hpp              # Key management and key expansion
-│   ├── state                # State matrix implementation
+│   ├── state.hpp            # State matrix implementation
 │   └── crypt/               # Cryptographic functions
 │       ├── add_round_key.hpp
 │       ├── sub_bytes.hpp
@@ -61,9 +62,14 @@ aes_cipher/
 │   └── helpers.hpp          # /src/helpers.hpp header
 │
 ├── examples/
-│   ├── example1.cpp         # AES-128 example
-│   ├── example2.cpp         # AES-192 example
-│   └── example3.cpp         # AES-256 example
+│   ├── ECB/                 # ECB examples
+│   │   ├── example1.cpp         # AES-128 example
+│   │   ├── example2.cpp         # AES-192 example
+│   │   └── example3.cpp         # AES-256 example
+│   └── CBC/                 # CBC examples
+│       ├── example1.cpp         # AES-128 example
+│       ├── example2.cpp         # AES-192 example
+│       └── example3.cpp         # AES-256 example
 │
 ├── README.md                # This readme
 ├── SECURITY.md              # Security disclaimer
@@ -73,16 +79,18 @@ aes_cipher/
 
 ## 🔧 Available Functions
 
-### Multi-Size AES Encryption
+### Multi-Size AES Encryption in ECB and CBC modes
 
 ```cpp
 Message encrypt_aes(Message message, const Key& key)
+Message encrypt_aes(Message message, const Key& key, const State& iv)
 ```
 
-### Multi-Size AES Decryption
+### Multi-Size AES Decryption in ECB and CBC modes
 
 ```cpp
 Message decrypt_aes(Message encrypted, const Key& key)
+Message decrypt_aes(Message encrypted, const Key& key, const State& iv)
 ```
 
 ## How AES Works
@@ -96,6 +104,12 @@ AES is a symmetric encryption algorithm that uses:
 5. **Key Expansion**: Generation of 11 (AES-128), 13 (AES-192) or 15 (AES-256) round keys
 
 For more information: [NIST AES Specification](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf)
+
+## Encryption modes
+
+- **ECB (Electronic CodeBook)**: Simple modes where each block is encrypted independently. ⚠️ Less secure for repeated patterns.
+
+- **CBC (Cipher Block Chaining)**: Each block is XORed with the previous ciphertext block before encryption, providing better security properties.
 
 ## License
 

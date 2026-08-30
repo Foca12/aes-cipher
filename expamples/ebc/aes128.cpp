@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/aes_cipher.hpp"
+#include "../../include/aes_cipher.hpp"
 
 using namespace std;
 
@@ -9,38 +9,48 @@ typedef struct {
   string cipher;
 } test;
 
-const test tests[6] = { 
+const test tests[6] = {
   // --- NIST Vectors ---
-  {"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b",
-   "6bc1bee22e409f96e93d7e117393172a",
-   "bd334f1d6e45f25ff712a214571fa5cc"},
+  {
+    "2b7e151628aed2a6abf7158809cf4f3c",
+    "6bc1bee22e409f96e93d7e117393172a",
+    "3ad77bb40d7a3660a89ecaf32466ef97"
+    },
+  {
+    "2b7e151628aed2a6abf7158809cf4f3c",
+    "ae2d8a571e03ac9c9eb76fac45af8e51",
+    "f5d3d58503b9699de785895a96fdbaaf",
+    },
+  {
+    "2b7e151628aed2a6abf7158809cf4f3c",
+    "30c81c46a35ce411e5fbc1191a0a52ef",
+    "43b1cd7f598ece23881b00e3ed030688",
 
-  {"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b",
-   "ae2d8a571e03ac9c9eb76fac45af8e51",
-   "974104846d0ad3ad7734ecb3ecee4eef"},
+    },
+  {
+    "2b7e151628aed2a6abf7158809cf4f3c",
+    "f69f2445df4f9b17ad2b417be66c3710",
+    "7b0c785e27e8ad3f8223207104725dd4",
+    },
+  
+  // --- Recurring Pattern --- 
+  {
+    "000102030405060708090a0b0c0d0e0f",
+    "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
+    "69c4e0d86a7b0430d8cdb78070b4c55a69c4e0d86a7b0430d8cdb78070b4c55a"
+    },
 
-  {"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b",
-   "30c81c46a35ce411e5fbc1191a0a52ef",
-   "ef7afd2270e2e60adce0ba2face6444e"},
-
-  {"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b",
-   "f69f2445df4f9b17ad2b417be66c3710",
-   "9a4b41ba738d6c72fb16691603c18e0e"},
-
-   
-  {"000102030405060708090a0b0c0d0e0f1011121314151617",
-   "00112233445566778899aabbccddeeff",
-   "dda97ca4864cdfe06eaf70a0ec0d7191",},
-
-  // --- All-Zeroes Test Vector
-  {"000000000000000000000000000000000000000000000000",
-   "00000000000000000000000000000000",
-   "aae06992acbf52a3e8f4a96ec9300bd7",}
+  // --- All-Zeros Test Vector ---
+  {
+    "00000000000000000000000000000000",
+    "00000000000000000000000000000000",
+    "66e94bd4ef8a2c3b884cfa59ca342b2e"
+    }
 };
 
 
 int main(){
-  cout << "START OF THE TEST OF THE LIBRARY (AES-192)" << endl;
+  cout << "START OF THE TEST OF THE LIBRARY (AES-128 EBC)" << endl;
   
   int passed = 0;
   int failed = 0;

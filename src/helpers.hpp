@@ -18,22 +18,19 @@ namespace aes_constants
   constexpr size_t state_columns = 4;
   constexpr size_t state_chars = 16;
 
-  constexpr size_t key128_rows = 4;
-  constexpr size_t key128_columns = 4;
+  constexpr size_t key128_start_words = 4;
   constexpr size_t key128_chars = 16;
-  constexpr size_t key128_expanded_words = 44;
+  constexpr size_t key128_total_words = 44;
   constexpr size_t key128_rounds = 10;
 
-  constexpr size_t key192_rows = 4;
-  constexpr size_t key192_columns = 6;
+  constexpr size_t key192_start_words = 6;
   constexpr size_t key192_chars = 24;
-  constexpr size_t key192_expanded_words = 52;
+  constexpr size_t key192_total_words = 52;
   constexpr size_t key192_rounds = 12;
 
-  constexpr size_t key256_rows = 4;
-  constexpr size_t key256_columns = 8;
+  constexpr size_t key256_start_words = 8;
   constexpr size_t key256_chars = 32;
-  constexpr size_t key256_expanded_words = 60;
+  constexpr size_t key256_total_words = 60;
   constexpr size_t key256_rounds = 14;
 
   const int sbox[256] = {
@@ -75,6 +72,9 @@ namespace aes_constants
   const int rcon[16] = {
     0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A
 };
+
+  constexpr size_t chars_per_hex = 2;
+  constexpr size_t chars_per_oct = 3;
 } // namespace aes_constants
 
 
@@ -166,31 +166,27 @@ namespace aes_functions
              {mul_0B, mul_0D, mul_09, mul_0E}};
 
 
-  std::string convert_to_string(aes_types::ilist vct){  
+  std::string convert_to_string(const aes_types::ilist& vct){  
     std::stringstream ss;
     std::string str;
     bool only_valid = true;
-    
-    for (int i : vct) {
-      if ((i < 32 || i > 126) && i != 0){
+
+    for (const uint8_t& i : vct) {
+      // if its out of range of ASCII chars
+      if (i < 32 || i > 126){
         only_valid = false;
-        }
       }
-
-      for (int i : vct) {
-        if (only_valid){
-          str += (char) i;
-        }
-        else {
-          ss << "\\x";
-          ss << std::setfill('0') << std::setw(2) << std::hex << i;
-        }
+      if (only_valid){
+        str += static_cast<char>(i);
       }
-
-      return only_valid? str : ss.str();
+      ss << "\\x";
+      ss << std::setfill('0') << std::setw(2) << std::hex << i;
     }
+
+    return only_valid? str : ss.str();
+  }
   template <size_t len>
-  std::string convert_to_string(aes_types::iarr<len> arr){  
+  std::string convert_to_string(const aes_types::iarr<len>& arr){  
     aes_types::ilist vct;
     vct.assign(arr.begin(), arr.end());
     return convert_to_string(vct);
@@ -198,68 +194,43 @@ namespace aes_functions
 
   // convert hex/oct string in vector of uint
   aes_types::ilist basic_from_hex(const std::string& str){  
-    aes_types::ilist vct;
-    // converts a single hex number in int
-    auto hex_to_int = [](const std::string& s) -> int{
-      int t = 0;
-      for (int n = 0; n < s.length(); n++){
-        int current;
-        if (s[n] >= 'a' && s[n] <= 'f'){
-          current = s[n] - 'a' + 10;
-        }
-        else if (s[n] >= '0' && s[n] <= '9'){
-          current = s[n] - '0';
-        }
-        else {
-          throw std::invalid_argument("Got invalid hex character: "+s[n]);
-        }
-        t += current * pow(16, s.length()-n-1);
-      }
-      return t;
+    if (str.length() % aes_constants::chars_per_hex != 0){
+      throw std::invalid_argument("Invalid hex number");
+    }
 
-    };
-    for (int i = 0; i < str.length(); i += 2){
-      vct.push_back(hex_to_int({str[i], str[i+1]}));
-    }
-    return vct;
-    }
-  aes_types::ilist basic_from_oct(const std::string& str){  
     aes_types::ilist vct;
-    // converst a single oct digit in int
-    auto oct_to_int = [](const std::string& s) -> int{
-      int t = 0;
-      for (int n = 0; n < s.length(); n++){
-        int current = 0;
-        if (s[n] >= '0' && s[n] <= '7'){
-          current = s[n] - '0';
-        }
-        else {
-          throw std::invalid_argument("Got invalid oct character: "+s[n]);
-        }
-        t += current * pow(8, s.length()-n-1);
-      }
-      return t;
-    };
-    for (int n = 0; n < str.length(); n += 3){
-      vct.push_back(oct_to_int({str[n], str[n+1], str[n+2]}));
+    for (size_t i = 0; i < str.length(); i += aes_constants::chars_per_hex){
+      std::string tmp = str.substr(i, aes_constants::chars_per_hex);
+      vct.push_back(std::stoi(tmp, nullptr, 16));
     }
     return vct;
   }
-  
+  aes_types::ilist basic_from_oct(const std::string& str){  
+    if (str.length() % aes_constants::chars_per_oct != 0){
+      throw std::invalid_argument("Invalid oct number");
+    }
+
+    aes_types::ilist vct;
+    for (size_t i = 0; i < str.length(); i += aes_constants::chars_per_oct){
+      std::string tmp = str.substr(i, aes_constants::chars_per_oct);
+      vct.push_back(std::stoi(tmp, nullptr, 8));
+    }
+    return vct;
+  }
   // convert vector of uint in hex/oct string
-  std::string basic_hex(aes_types::ilist bytes){  
+  std::string basic_hex(const aes_types::ilist& bytes){  
     std::stringstream ss;
     
-    for (int i : bytes) {
+    for (const int& i : bytes) {
       ss << std::hex << std::setw(2) << std::setfill('0') << i;
     }
 
     return ss.str();
   }
-  std::string basic_oct(aes_types::ilist bytes){  
+  std::string basic_oct(const aes_types::ilist& bytes){  
     std::stringstream ss;
     
-    for (int i : bytes) {
+    for (const int& i : bytes) {
       ss << std::oct << std::setw(3) << std::setfill('0') << i;
     }
 

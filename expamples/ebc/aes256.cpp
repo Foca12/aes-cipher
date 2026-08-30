@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/aes_cipher.hpp"
+#include "../../include/aes_cipher.hpp"
 
 using namespace std;
 
@@ -26,10 +26,11 @@ const test tests[6] = {
   {"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4",
    "f69f2445df4f9b17ad2b417be66c3710",
    "23304b7a39f9f3ff067d8d8f9e24ecc7"},
-
+  
+  // --- Recurring Pattern --- 
   {"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
-   "00112233445566778899aabbccddeeff",
-   "8ea2b7ca516745bfeafc49904b496089"},
+   "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
+   "8ea2b7ca516745bfeafc49904b4960898ea2b7ca516745bfeafc49904b496089"},
 
   // --- Gruppo 3: All-Zeros Test Vector ---
   {"0000000000000000000000000000000000000000000000000000000000000000",
@@ -39,7 +40,7 @@ const test tests[6] = {
 
 
 int main(){
-  cout << "START OF THE TEST OF THE LIBRARY (AES-256)" << endl;
+  cout << "START OF THE TEST OF THE LIBRARY (AES-256 EBC)" << endl;
   
   int passed = 0;
   int failed = 0;
