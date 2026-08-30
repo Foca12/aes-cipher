@@ -180,7 +180,7 @@ namespace aes_functions
         str += static_cast<char>(i);
       }
       ss << "\\x";
-      ss << std::setfill('0') << std::setw(2) << std::hex << i;
+      ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(i);
     }
 
     return only_valid? str : ss.str();
