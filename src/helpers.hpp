@@ -72,6 +72,9 @@ namespace aes_constants
   const int rcon[16] = {
     0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A
 };
+
+  constexpr size_t chars_per_hex = 2;
+  constexpr size_t chars_per_oct = 3;
 } // namespace aes_constants
 
 
@@ -191,54 +194,31 @@ namespace aes_functions
 
   // convert hex/oct string in vector of uint
   aes_types::ilist basic_from_hex(const std::string& str){  
-    aes_types::ilist vct;
-    // converts a single hex number in int
-    auto hex_to_int = [](const std::string& hex_string) -> uint8_t{
-      uint8_t sum = 0;
-      for (size_t idx = 0; idx < hex_string.length(); idx++){
-        uint8_t current_sum;
-        if (hex_string[idx] >= 'a' && hex_string[idx] <= 'f'){
-          current_sum = hex_string[idx] - 'a' + 10;
-        }
-        else if (hex_string[idx] >= '0' && hex_string[idx] <= '9'){
-          current_sum = hex_string[idx] - '0';
-        }
-        else {
-          throw std::invalid_argument("Got invalid hex character: "+hex_string[idx]);
-        }
-        sum += current_sum * pow(16, hex_string.length()-idx-1);
-      }
-      return sum;
+    if (str.length() % aes_constants::chars_per_hex != 0){
+      throw std::invalid_argument("Invalid hex number");
+    }
 
-    };
-    for (size_t i = 0; i < str.length(); i += 2){
-      vct.push_back(hex_to_int({str[i], str[i+1]}));
+    std::cout << str.length() << '\n';
+    aes_types::ilist vct;
+    for (size_t i = 0; i < str.length(); i += aes_constants::chars_per_hex){
+      std::string tmp = str.substr(i, aes_constants::chars_per_hex);
+      vct.push_back(std::stoi(tmp, nullptr, 16));
     }
     return vct;
   }
   aes_types::ilist basic_from_oct(const std::string& str){  
+    if (str.length() % aes_constants::chars_per_oct != 0){
+      throw std::invalid_argument("Invalid oct number");
+    }
+
+    std::cout << str.length() << '\n';
     aes_types::ilist vct;
-    // converst a single oct digit in int
-    auto oct_to_int = [](const std::string& hex_string) -> uint8_t{
-      uint8_t sum = 0;
-      for (size_t idx = 0; idx < hex_string.length(); idx++){
-        uint8_t current_sum = 0;
-        if (hex_string[idx] >= '0' && hex_string[idx] <= '7'){
-          current_sum = hex_string[idx] - '0';
-        }
-        else {
-          throw std::invalid_argument("Got invalid oct character: "+hex_string[idx]);
-        }
-        sum += current_sum * pow(8, hex_string.length()-idx-1);
-      }
-      return sum;
-    };
-    for (size_t n = 0; n < str.length(); n += 3){
-      vct.push_back(oct_to_int({str[n], str[n+1], str[n+2]}));
+    for (size_t i = 0; i < str.length(); i += aes_constants::chars_per_oct){
+      std::string tmp = str.substr(i, aes_constants::chars_per_oct);
+      vct.push_back(std::stoi(tmp, nullptr, 8));
     }
     return vct;
   }
-  
   // convert vector of uint in hex/oct string
   std::string basic_hex(const aes_types::ilist& bytes){  
     std::stringstream ss;
