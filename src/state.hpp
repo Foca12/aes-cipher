@@ -127,6 +127,12 @@ class State{
   typename aes_types::iarr_c_iterator<aes_constants::state_chars> end() const {
     return this->bytes.end();
   }
+  typename aes_types::iarr_iterator<aes_constants::state_chars> begin() {
+    return this->bytes.begin();
+  }
+  typename aes_types::iarr_iterator<aes_constants::state_chars> end() {
+    return this->bytes.end();
+  }
 
   uint8_t operator[](int idx) const {
     return this->bytes[State::handle_idx(idx)];

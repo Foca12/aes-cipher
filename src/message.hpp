@@ -22,8 +22,18 @@ class Message {
     return result;
   }
 
-  struct support_iterator {
-    aes_types::message_vct support_states;
+  struct support_state_c_iterator {
+    const aes_types::message_vct& support_states;
+
+    aes_types::message_c_iterator begin() const {
+      return this->support_states.begin();
+    }
+    aes_types::message_c_iterator end() const {
+      return this->support_states.end();
+    }
+  };
+  struct support_state_iterator {
+    aes_types::message_vct& support_states;
 
     aes_types::message_iterator begin(){
       return this->support_states.begin();
@@ -126,9 +136,18 @@ class Message {
   typename aes_types::iarr_c_iterator<aes_constants::state_chars> end() const {
     return this->states[0].end();
   }
+  typename aes_types::iarr_iterator<aes_constants::state_chars> begin() {
+    return this->states[0].begin();
+  }
+  typename aes_types::iarr_iterator<aes_constants::state_chars> end() {
+    return this->states[0].end();
+  }
   
-  support_iterator state_iterator() const {
-    return support_iterator{this->states};
+  support_state_c_iterator state_iterator() const {
+    return support_state_c_iterator{this->states};
+  }
+  support_state_iterator state_iterator() {
+    return support_state_iterator{this->states};
   }
 
   Message& operator=(const Message& message){
