@@ -120,7 +120,7 @@ class Message {
     size_t state_idx = this->handle_state_idx(idx);
     return this->states[state_idx];
   }
-  State state(int idx) const {
+  const State& state(int idx) const {
     size_t state_idx = this->handle_state_idx(idx);
     return this->states[state_idx];
   }
