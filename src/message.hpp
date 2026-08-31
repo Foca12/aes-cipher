@@ -49,7 +49,9 @@ class Message {
     this->clear();
   }
   
-  Message(){}
+  Message(size_t len = 0){
+    this->states.resize(len, State ());
+  }
   Message(const aes_types::message_vct& list){
     this->states = list;
   }
@@ -62,28 +64,28 @@ class Message {
     return Message::divide_ilist(vct);
   }
   static Message divide_ilist(aes_types::ilist bytes){
-    Message message;
+    // total states
+    size_t states = bytes.size() / aes_constants::state_chars + 1;
+    Message message (states);
+
+    // foreach full state
+    for (size_t state_idx = 0; state_idx < states-1; state_idx++){
+      // slices bytes into State using std::copy
+      State current;
+      size_t start_offset = state_idx*aes_constants::state_chars;
+      size_t end_offset = (state_idx+1)*aes_constants::state_chars;
+      std::copy(bytes.begin()+start_offset, bytes.begin()+end_offset, current.begin());
+
+      message.state(state_idx) = current;
+    }
+    
+    // last state
     State current;
+    size_t start_offset = (states-1)*aes_constants::state_chars;
+    std::copy(bytes.begin()+start_offset, bytes.end(), current.begin());
 
-    // number of zeros to add ot bytes for make it a multiple of 16
-    size_t padding = bytes.size() % aes_constants::state_chars;
-    // number of states
-    size_t states = bytes.size() / aes_constants::state_chars;
-    if (padding > 0) {
-      states ++;
-      padding = aes_constants::state_chars - padding;
-    }
+    message.state(states-1) = current;
 
-    bytes.insert(bytes.end(), padding, 0);
-
-    for (size_t state_idx = 0; state_idx < states; state_idx++){
-      current.clear();
-      for (size_t char_idx = 0; char_idx < aes_constants::state_chars; char_idx++){
-        size_t state_start = state_idx*aes_constants::state_chars;
-        current[char_idx] = bytes[char_idx+state_start];
-      }
-      message.extend(current);
-    }
     return message;
   }
 
@@ -100,13 +102,6 @@ class Message {
     return this->length();
   }
   
-  void extend(const State& bytes) {
-    this->states.push_back(bytes);
-  }
-  void push_back(const State& bytes) {
-    this->states.push_back(bytes);
-  }
-
   uint8_t& operator[](int id) {
     size_t idx = this->handle_idx(id);
     size_t state_idx = idx / aes_constants::state_chars;
@@ -156,23 +151,23 @@ class Message {
   }
 
   Message operator^(const State& state) const {
-    Message result;
-    for (State i : this->state_iterator()){
-      result.extend(state ^ i);
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i) ^ state;
     }
     return result;
   }
   Message operator&(const State& state) const {
-    Message result;
-    for (State i : this->state_iterator()){
-      result.extend(state & i);
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i) & state;
     }
     return result;
   }
   Message operator|(const State& state) const {
-    Message result;
-    for (State i : this->state_iterator()){
-      result.extend(state | i);
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i) | state;
     }
     return result;
   }
@@ -188,16 +183,16 @@ class Message {
   }
 
   Message operator>> (const int rounds) const {
-    Message result;
-    for (auto i : this->state_iterator()){
-      result.extend(i >> rounds);
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i) >> rounds;
     }
     return result;
   }
   Message operator<< (const int rounds) const {
-    Message result;
-    for (auto i : this->state_iterator()){
-      result.extend(i << rounds);
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i) << rounds;
     }
     return result;
   }
@@ -210,16 +205,16 @@ class Message {
   }
 
   Message shift_left(int rounds) const {
-    Message result;
-    for (State i : this->state_iterator()){
-      result.extend(i.shift_left(rounds));
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i).shift_left(rounds);
     }
     return result;
   }
   Message shift_right(int rounds) const {
-    Message result;
-    for (State i : this->state_iterator()){
-      result.extend(i.shift_right(rounds));
+    Message result = *this;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = result.state(i).shift_right(rounds);
     }
     return result;
   }

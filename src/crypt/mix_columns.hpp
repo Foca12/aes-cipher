@@ -32,10 +32,10 @@ namespace crypt_operations
     }
     return result;
   }
-  Message mix_columns(Message message){
-    Message result;
-    for (State i : message.state_iterator()){
-      result.extend(mix_columns(i));
+  Message mix_columns(const Message& message){
+    Message result = message;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = mix_columns(result.state(i));
     }
     return result;
   }
@@ -50,10 +50,10 @@ namespace crypt_operations
     }
     return result;
   }
-  Message inv_mix_columns(Message message){
-    Message result;
-    for (State i : message.state_iterator()){
-      result.extend(inv_mix_columns(i));
+  Message inv_mix_columns(const Message& message){
+    Message result = message;
+    for (size_t i = 0; i < result.length(); i++){
+      result.state(i) = inv_mix_columns(result.state(i));
     }
     return result;
   }
