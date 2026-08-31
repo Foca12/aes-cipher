@@ -36,7 +36,7 @@ class Message {
   public:
   ~Message() {
     // clear memory 
-    std::fill(this->states.data(), this->states.data()+this->states.capacity(), 0);
+    this->clear();
   }
   
   Message(){}
@@ -53,7 +53,7 @@ class Message {
   }
   static Message divide_ilist(aes_types::ilist bytes){
     Message message;
-    State current(0);
+    State current;
 
     // number of zeros to add ot bytes for make it a multiple of 16
     size_t padding = bytes.size() % aes_constants::state_chars;
@@ -75,6 +75,12 @@ class Message {
       message.extend(current);
     }
     return message;
+  }
+
+  void clear() {
+    for (State& current_state : this->states){
+      current_state.clear();
+    }
   }
 
   int length() const {

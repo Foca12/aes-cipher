@@ -109,10 +109,7 @@ class Key {
 
   public:
   ~Key() {
-    for (auto& word : this->words) {
-      volatile uint8_t* ptr = reinterpret_cast<volatile uint8_t*>(word.data());
-      std::fill(ptr, ptr + aes_constants::state_rows, 0);
-    }
+    this->clear();
   }
   Key (const aes_types::ilist& bytes){
     for (auto& key_spec : Key::global_key_specs){
@@ -134,6 +131,15 @@ class Key {
       }
     }
     throw std::invalid_argument("Invalid key length");
+  }
+
+  void clear(){
+    for (auto& word : this->words) {
+      volatile uint8_t* ptr = word.data();
+      for (size_t i = 0; i < aes_constants::state_rows; i++){
+        ptr[i] = 0;
+      }
+    }
   }
 
   void expand() {

@@ -35,18 +35,18 @@ class State{
   }
 
   public:
+  ~State() {
+    this->clear();
+  }
   
   State(){
-    this->fill(0);
-  }
-  State(uint8_t x){
-    this->fill(x);
+    this->clear();
   }
   State(const aes_types::state_arr& bytes){
     this->bytes = bytes;
   };
   State(const aes_types::ilist & bytes){
-    if (bytes.size() != aes_constants::state_chars){
+    if (bytes.size() > aes_constants::state_chars){
       throw std::invalid_argument("Input vector is bigger than state dimension");
     }
     aes_types::state_arr arr;
@@ -56,7 +56,10 @@ class State{
   
 
   void fill(uint8_t x){
-    this->bytes.fill(x);
+    volatile uint8_t* ptr = this->bytes.data();
+    for (size_t i = 0; i < aes_constants::state_chars; i++){
+      ptr[i] = x;
+    }
   }
   void clear(){
     this->fill(0);
