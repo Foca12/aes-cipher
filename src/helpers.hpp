@@ -88,6 +88,8 @@ namespace aes_types
 
   template <size_t len>
   using iarr_c_iterator = typename std::array<uint8_t, len>::const_iterator;
+  template <size_t len>
+  using iarr_iterator = typename std::array<uint8_t, len>::iterator;
 
   // state types
   using state_arr = std::array<uint8_t, aes_constants::state_chars>;
@@ -99,6 +101,7 @@ namespace aes_types
 
   // message types
   using message_vct = std::vector<State>;
+  using message_c_iterator = std::vector<State>::const_iterator;
   using message_iterator = std::vector<State>::iterator;
 
 
@@ -180,7 +183,7 @@ namespace aes_functions
         str += static_cast<char>(i);
       }
       ss << "\\x";
-      ss << std::setfill('0') << std::setw(2) << std::hex << i;
+      ss << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(i);
     }
 
     return only_valid? str : ss.str();

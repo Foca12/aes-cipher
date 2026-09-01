@@ -35,31 +35,35 @@ class State{
   }
 
   public:
-  
-  State(){
-    this->fill(0);
+  ~State() {
+    this->clear();
   }
-  State(uint8_t x){
+  
+  State(uint8_t x = aes_constants::state_chars){
     this->fill(x);
   }
   State(const aes_types::state_arr& bytes){
     this->bytes = bytes;
   };
   State(const aes_types::ilist & bytes){
-    if (bytes.size() != aes_constants::state_chars){
+    if (bytes.size() > aes_constants::state_chars){
       throw std::invalid_argument("Input vector is bigger than state dimension");
     }
-    aes_types::state_arr arr;
-    std::copy(bytes.begin(), bytes.end(), arr.begin());
-    this->bytes = arr;
+    
+    // creates padding
+    this->fill(aes_constants::state_chars - bytes.size());
+    std::copy(bytes.begin(), bytes.end(), this->begin());
   };
   
 
   void fill(uint8_t x){
-    this->bytes.fill(x);
+    volatile uint8_t* ptr = this->bytes.data();
+    for (size_t i = 0; i < aes_constants::state_chars; i++){
+      ptr[i] = x;
+    }
   }
   void clear(){
-    this->fill(0);
+    this->fill(aes_constants::state_chars);
   }
   
   aes_types::state_matrix_row get_rows() const {
@@ -122,6 +126,12 @@ class State{
     return this->bytes.begin();
   }
   typename aes_types::iarr_c_iterator<aes_constants::state_chars> end() const {
+    return this->bytes.end();
+  }
+  typename aes_types::iarr_iterator<aes_constants::state_chars> begin() {
+    return this->bytes.begin();
+  }
+  typename aes_types::iarr_iterator<aes_constants::state_chars> end() {
     return this->bytes.end();
   }
 
