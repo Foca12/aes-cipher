@@ -39,8 +39,8 @@ class State{
     this->clear();
   }
   
-  State(){
-    this->clear();
+  State(uint8_t x = aes_constants::state_chars){
+    this->fill(x);
   }
   State(const aes_types::state_arr& bytes){
     this->bytes = bytes;
@@ -49,9 +49,10 @@ class State{
     if (bytes.size() > aes_constants::state_chars){
       throw std::invalid_argument("Input vector is bigger than state dimension");
     }
-    aes_types::state_arr arr;
-    std::copy(bytes.begin(), bytes.end(), arr.begin());
-    this->bytes = arr;
+    
+    // creates padding
+    this->fill(aes_constants::state_chars - bytes.size());
+    std::copy(bytes.begin(), bytes.end(), this->begin());
   };
   
 
@@ -62,7 +63,7 @@ class State{
     }
   }
   void clear(){
-    this->fill(0);
+    this->fill(aes_constants::state_chars);
   }
   
   aes_types::state_matrix_row get_rows() const {

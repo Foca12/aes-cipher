@@ -80,7 +80,7 @@ class Message {
     }
     
     // last state
-    State current;
+    State current (aes_constants::state_chars - bytes.size() + (states-1)*aes_constants::state_chars);
     size_t start_offset = (states-1)*aes_constants::state_chars;
     std::copy(bytes.begin()+start_offset, bytes.end(), current.begin());
 
