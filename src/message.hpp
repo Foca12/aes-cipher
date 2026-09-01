@@ -126,16 +126,16 @@ class Message {
   }
 
   typename aes_types::iarr_c_iterator<aes_constants::state_chars> begin() const {
-    return this->states[0].begin();
+    return this->state(0).begin();
   }
   typename aes_types::iarr_c_iterator<aes_constants::state_chars> end() const {
-    return this->states[0].end();
+    return this->state(-1).end();
   }
   typename aes_types::iarr_iterator<aes_constants::state_chars> begin() {
-    return this->states[0].begin();
+    return this->state(0).begin();
   }
   typename aes_types::iarr_iterator<aes_constants::state_chars> end() {
-    return this->states[0].end();
+    return this->state(-1).end();
   }
   
   support_state_c_iterator state_iterator() const {
